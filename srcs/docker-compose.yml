@@ -1,0 +1,21 @@
+version: '1'
+
+services:
+  database:
+    init: true
+    build:
+      context: ./requirements/mariadb
+    # container_name: database
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: ./${LOGIN}/data/
+        # source: /home/${LOGIN}/data/
+        target: /etc/mysql/my.cnf
+
+# volumes:
+#   db-data:
+#     - type: bind
+#       source: /home/${LOGIN}/data
+#       target: /etc/mysql/my.cnf
