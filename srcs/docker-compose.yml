@@ -2,9 +2,10 @@ version: '3.8'
 
 services:
   mariadb:
-    image: mariadb
+    image: mariadb:inception
     container_name: mariadb
     init: true
+    restart: on-failure
     build:
       context: ./requirements/mariadb
     env_file:
@@ -15,9 +16,10 @@ services:
       - mariadb:/var/lib/mysql
 
   wordpress:
-    image: wordpress
+    image: wordpress:inception
     container_name: wordpress
     init: true
+    restart: on-failure
     build:
       context: ./requirements/wordpress
     env_file:
@@ -30,9 +32,10 @@ services:
       - mariadb
 
   nginx:
-    image: nginx
+    image: nginx:inception
     init: true
     container_name: nginx
+    restart: on-failure
     build:
       context: ./requirements/nginx
     networks:
