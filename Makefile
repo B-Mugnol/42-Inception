@@ -6,7 +6,7 @@
 #    By: bmugnol- <bmugnol-@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/13 14:40:07 by bmugnol-          #+#    #+#              #
-#    Updated: 2024/03/02 16:41:59 by bmugnol-         ###   ########.fr        #
+#    Updated: 2024/03/02 18:35:34 by bmugnol-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ include ./srcs/.env
 
 # Docker compose command
 # (for easy switch between the deprecated 'docker-compose' and 'docker compose')
-COMPOSE_CMD		:=	docker compose
+COMPOSE_CMD		:=	docker-compose
 
 # Docker compose configuration file
 COMPOSE_FILE	:=	./srcs/docker-compose.yml
