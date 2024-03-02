@@ -6,43 +6,54 @@
 #    By: bmugnol- <bmugnol-@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/13 14:40:07 by bmugnol-          #+#    #+#              #
-#    Updated: 2024/01/13 15:12:29 by bmugnol-         ###   ########.fr        #
+#    Updated: 2024/03/02 16:41:59 by bmugnol-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# Intra profile login
-LOGIN	:=	bmugnol-
+# Includes intra profile login as the variable LOGIN
+include ./srcs/.env
+
+# Docker compose command
+# (for easy switch between the deprecated 'docker-compose' and 'docker compose')
+COMPOSE_CMD		:=	docker compose
 
 # Docker compose configuration file
-COMPOSE_FILE	:=	srcs/docker-compose.yml
+COMPOSE_FILE	:=	./srcs/docker-compose.yml
 
 # Volumes folder
 VOLUME_FOLDER	:=	/home/$(LOGIN)/data
 
 # -----------------------RULES------------------------------------------------ #
-.PHONY: all stop restart down fclean
+.PHONY: all up stop restart down clean build fclean preclean re
 
 all: up
 
-up:
-	docker compose $(COMPOSE_FILE) up
+up: build
+	sudo $(COMPOSE_CMD) --file=$(COMPOSE_FILE) up --build --detach
 
 stop:
-	docker compose $(COMPOSE_FILE) stop
+	sudo $(COMPOSE_CMD) --file=$(COMPOSE_FILE) stop
 
 restart:
-	docker compose $(COMPOSE_FILE) restart
+	sudo $(COMPOSE_CMD) --file=$(COMPOSE_FILE) restart
 
 down clean:
-	docker compose $(COMPOSE_FILE) down
+	sudo $(COMPOSE_CMD) --file=$(COMPOSE_FILE) down --rmi all --remove-orphans -v
 
-# Directory making
-$(VOLUME_FOLDER):
-	sudo mkdir -p $@
-$(VOLUME_FOLDER)/wordpress $(VOLUME_FOLDER)/mariadb : $(VOLUME_FOLDER)
-	sudo mkdir -p $@
+build:
+	sudo mkdir -p $(VOLUME_FOLDER)/wordpress
+	sudo mkdir -p $(VOLUME_FOLDER)/mariadb
+	sudo chmod -R 777 $(VOLUME_FOLDER)/mariadb
+	sudo chmod -R 777 $(VOLUME_FOLDER)/wordpress
+	sudo $(COMPOSE_CMD) --file=$(COMPOSE_FILE) up --build --detach
+	sudo grep $(LOGIN).42.fr /etc/hosts || echo "127.0.0.1 $(LOGIN).42.fr" | sudo tee -a /etc/hosts
 
 # Full clean: stop and remove all Docker containers
-# fclean: down
-fclean:
-	@sudo rm -rf $(VOLUME_FOLDER)
+fclean: clean
+	sudo rm -rf $(VOLUME_FOLDER)
+
+preclean:
+	docker ps -a -q --filter "status=exited" | xargs -r docker rm
+	docker images -q -f "dangling=true" | xargs -r docker rmi
+
+re: fclean all
