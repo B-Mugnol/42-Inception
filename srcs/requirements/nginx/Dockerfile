@@ -17,9 +17,10 @@ RUN chmod 755 /var/www/html && \
 
 # Create SSL certificates
 RUN mkdir -p /etc/nginx/ssl && \
-	openssl req -batch -x509 -sha256 -nodes -newkey rsa:2048 -days 365 \
+	openssl req -batch -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -utf8 \
     -keyout /etc/nginx/ssl/inception.key \
-    -out /etc/nginx/ssl/inception.crt
+    -out /etc/nginx/ssl/inception.crt \
+	-subj "/C=BR/ST=SãoPaulo/L=Valinhos/O=42SP/CN=bmugnol.42.fr"
 
 # My Nginx
 FROM mynginx
